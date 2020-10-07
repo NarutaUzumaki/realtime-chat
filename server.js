@@ -17,13 +17,28 @@ var Message = mongoose.model('Message',{
 
 var dbURL = 'mongodb://localhost:27017/chat';
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 38345a933d2ef3541cace5850087e6eef1b65ec0
 app.get('/messages', (req, res) => {
 	Message.find({}, (err, messages) =>{
 		res.send(messages);
 	});
 });
 
+<<<<<<< HEAD
 
+=======
+// app.post('/messages', (req, res) => {
+// 	var message = new Message(req.body);
+// 	message.save((err) =>{
+// 		if (err)
+// 			sendStatus(500);
+// 		res.sendStatus(200);
+// 	});
+// });
+>>>>>>> 38345a933d2ef3541cace5850087e6eef1b65ec0
 
 app.post('/messages', (req, res) => {
 	var message = new Message(req.body);
