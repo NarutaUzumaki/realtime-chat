@@ -1,7 +1,7 @@
 
 var express = require('express');
 var app = express();
-var server = app.listen(8810);
+var server = app.listen(3000);
 var io = require('socket.io').listen(server);
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
