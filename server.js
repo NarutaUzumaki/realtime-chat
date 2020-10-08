@@ -1,67 +1,67 @@
+const express = require("express");
+const socket = require("socket.io");
+const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+ 
+const PORT = 3000;
+const app = express();
 
-var express = require('express');
-var app = express();
-//var server = app.listen(3000);
-var io = require('socket.io').listen(server);
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
 
-app.use(express.static(__dirname));
+app.use(express.static("public"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 
-var Message = mongoose.model('Message',{
-	name: String, 
-	message: String}, 
-	'realtime');
 
-var dbURL = 'mongodb://localhost:27017/chat';
 
-app.get('/messages', (req, res) => {
-	Message.find({}, (err, messages) =>{
-		res.send(messages);
-	});
+const server = app.listen(PORT, function () {
+  console.log(`Listening on port ${PORT}`);
 });
 
 
-// app.post('/messages', (req, res) => {
-// 	var message = new Message(req.body);
-// 	message.save((err) =>{
-// 		if (err)
-// 			sendStatus(500);
-// 		res.sendStatus(200);
-// 	});
-// });
-
-
-app.post('/messages', (req, res) => {
-	var message = new Message(req.body);
-	message.save((err) => {
-		if(err)
-			sendStatus(500);
-		io.emit('message', req.body);
-		res.sendStatus(200);
-	})
-});
-
+const io = socket(server);
 
 io.on('connection', () => {
 	console.log('a user is connected');
 });
 
+//------------------------------
 
-mongoose.connect(dbURL, (err) =>{
-	console.log('mongodb connected', err);
+const Message = mongoose.model('Message',{
+	name: String, 
+	message: String
+}, 'realtime');
+
+mongoose.connect('mongodb://localhost:27017/chat', function(error){
+	if( error ) {
+		return console.log('Error MongoDB', error);
+	}
+	console.log('MongoDB connected');
 });
 
-var server = app.listen(3000, ()=>{
-	console.log('server is running on port', server.address().port);
-});
+//------------------------------
 
+app.get('/messages', showMessage);
+app.post('/messages', createMessage);
 
+function showMessage(req, res) {
+  Message.find({}, (err, messages) =>{
+		res.json(messages);
+	});
+}
 
+function createMessage(req, res) {
 
+  const message = new Message(req.body);
+  
+  message.save((err) => {
+    
+    if(err) {
+			return sendStatus(500);
+    }
 
-//var http = require('http').Server(app);
+		io.emit('message', req.body);
+    
+    return res.sendStatus(200);
+  })
 
-
+}
