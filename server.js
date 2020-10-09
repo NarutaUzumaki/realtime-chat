@@ -20,8 +20,17 @@ const server = app.listen(PORT, function () {
 
 const io = socket(server);
 
-io.on('connection', () => {
-	console.log('a user is connected');
+io.on('connection', socket => {
+	console.log('a new user is connected');
+
+	//simple greatings 
+	io.emit('test', 'Welcome to Arcadium chat');
+	//simple inform about connect and disconnect other user
+	socket.broadcast.emit('user', 'New user has joined to Arcadium');
+	
+	socket.on('disconnect', () => {
+		io.emit('test', 'A user has left the chat');
+	})
 });
 
 //------------------------------
