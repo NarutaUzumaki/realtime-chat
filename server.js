@@ -27,9 +27,16 @@ io.on('connection', socket => {
 	io.emit('test', 'Welcome to Arcadium chat');
 	//simple inform about connect and disconnect other user
 	socket.broadcast.emit('user', 'New user has joined to Arcadium');
-	
+	//simple inform about disconnect
 	socket.on('disconnect', () => {
 		io.emit('test', 'A user has left the chat');
+	})
+	//listen to user typing and inform other about it
+	socket.on('typing', (data)=>{
+		if(data.typing==true)
+			socket.broadcast.emit('display', data)
+		else
+			socket.broadcast.emit('display', data)
 	})
 });
 
